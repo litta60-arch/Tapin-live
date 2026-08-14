@@ -44,6 +44,11 @@ backend:
     LIVEKIT_API_KEY: "example_key"
     LIVEKIT_API_SECRET: "example_secret"
 
+ingress:
+  enabled: false
+  host: ""
+  tlsSecretName: ""
+
 resources: {}
 
 nodeSelector: {}
