@@ -1,0 +1,51 @@
+{{- if .Values.postgres }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: tapin-postgres
+spec:
+  selector:
+    app: tapin-postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tapin-postgres
+spec:
+  serviceName: tapin-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tapin-postgres
+  template:
+    metadata:
+      labels:
+        app: tapin-postgres
+    spec:
+      containers:
+        - name: postgres
+          image: {{ .Values.postgres.image }}
+          env:
+            - name: POSTGRES_USER
+              value: "{{ .Values.postgres.postgresUser }}"
+            - name: POSTGRES_PASSWORD
+              value: "{{ .Values.postgres.postgresPassword }}"
+            - name: POSTGRES_DB
+              value: "{{ .Values.postgres.postgresDB }}"
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: {{ .Values.postgres.storageSize }}
+{{- end }}

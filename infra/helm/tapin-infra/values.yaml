@@ -1,0 +1,53 @@
+# Default values for tapin-infra.
+# This file contains sensible defaults for local and small self-hosted deployments.
+
+images:
+  backend: litta60-arch/tapin-live-backend:latest
+  livekit: livekit/livekit-server:latest
+  coturn: instrumentisto/coturn:latest
+
+replicaCount:
+  backend: 1
+  livekit: 1
+  coturn: 1
+
+service:
+  type: ClusterIP
+
+livekit:
+  keys:
+    - example_key:example_secret
+  httpPort: 7880
+  rtcPort: 7883
+  udpPort: 7883
+
+coturn:
+  externalIP: ""
+  staticAuthSecret: "turnsecret"
+
+postgres:
+  image: postgres:15
+  postgresUser: postgres
+  postgresPassword: postgres
+  postgresDB: tapin
+  storageSize: 5Gi
+
+redis:
+  image: redis:7
+
+backend:
+  image: litta60-arch/tapin-live-backend:latest
+  port: 8000
+  env:
+    DATABASE_URL: "postgresql://postgres:postgres@tapin-postgres:5432/tapin"
+    REDIS_URL: "redis://tapin-redis:6379/0"
+    LIVEKIT_API_KEY: "example_key"
+    LIVEKIT_API_SECRET: "example_secret"
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

@@ -1,0 +1,52 @@
+{{- if .Values.livekit }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tapin-livekit
+spec:
+  replicas: {{ .Values.replicaCount.livekit }}
+  selector:
+    matchLabels:
+      app: tapin-livekit
+  template:
+    metadata:
+      labels:
+        app: tapin-livekit
+    spec:
+      containers:
+        - name: livekit
+          image: {{ .Values.images.livekit }}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: LIVEKIT_KEYS
+              value: "{{ range $k,$v := .Values.livekit.keys }}{{ $k }}:{{ $v }}{{ end }}"
+            - name: LIVEKIT_HTTPS_PORT
+              value: "{{ .Values.livekit.httpPort }}"
+            - name: LIVEKIT_RTC_PORT
+              value: "{{ .Values.livekit.rtcPort }}"
+            - name: LIVEKIT_UDP_PORT
+              value: "{{ .Values.livekit.udpPort }}"
+          ports:
+            - containerPort: {{ .Values.livekit.httpPort }}
+            - containerPort: {{ .Values.livekit.rtcPort }}
+            - containerPort: {{ .Values.livekit.udpPort }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tapin-livekit
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: tapin-livekit
+  ports:
+    - name: http
+      port: {{ .Values.livekit.httpPort }}
+      targetPort: {{ .Values.livekit.httpPort }}
+    - name: rtc
+      port: {{ .Values.livekit.rtcPort }}
+      targetPort: {{ .Values.livekit.rtcPort }}
+    - name: udp
+      port: {{ .Values.livekit.udpPort }}
+      targetPort: {{ .Values.livekit.udpPort }}
+{{- end }}

@@ -1,0 +1,42 @@
+{{- if .Values.backend }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tapin-backend
+spec:
+  replicas: {{ .Values.replicaCount.backend }}
+  selector:
+    matchLabels:
+      app: tapin-backend
+  template:
+    metadata:
+      labels:
+        app: tapin-backend
+    spec:
+      containers:
+        - name: backend
+          image: {{ .Values.backend.image }}
+          ports:
+            - containerPort: {{ .Values.backend.port }}
+          env:
+            - name: DATABASE_URL
+              value: "{{ .Values.backend.env.DATABASE_URL }}"
+            - name: REDIS_URL
+              value: "{{ .Values.backend.env.REDIS_URL }}"
+            - name: LIVEKIT_API_KEY
+              value: "{{ .Values.backend.env.LIVEKIT_API_KEY }}"
+            - name: LIVEKIT_API_SECRET
+              value: "{{ .Values.backend.env.LIVEKIT_API_SECRET }}"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tapin-backend
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: tapin-backend
+  ports:
+    - port: {{ .Values.backend.port }}
+      targetPort: {{ .Values.backend.port }}
+{{- end }}

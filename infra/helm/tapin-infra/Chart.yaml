@@ -1,0 +1,5 @@
+apiVersion: v2
+name: tapin-infra
+description: "Helm chart bundling LiveKit, coturn, backend, Postgres, and Redis for Tapin-live (dev/prod starter)"
+version: 0.1.0
+appVersion: "0.1.0"

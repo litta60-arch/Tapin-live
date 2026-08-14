@@ -1,0 +1,11 @@
+You have installed the Tapin Infra chart.
+
+Get the backend URL:
+  kubectl get svc tapin-backend
+
+Get LiveKit service:
+  kubectl get svc tapin-livekit
+
+Notes:
+- Replace LIVEKIT keys and coturn external IP in values.yaml for production.
+- Configure TLS via an ingress/ingress-controller (e.g. nginx/traefik) and cert-manager for production.

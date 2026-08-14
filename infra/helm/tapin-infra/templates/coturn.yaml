@@ -1,0 +1,42 @@
+{{- if .Values.coturn }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tapin-coturn
+spec:
+  replicas: {{ .Values.replicaCount.coturn }}
+  selector:
+    matchLabels:
+      app: tapin-coturn
+  template:
+    metadata:
+      labels:
+        app: tapin-coturn
+    spec:
+      containers:
+        - name: coturn
+          image: {{ .Values.images.coturn }}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TURN_STATIC_AUTH_SECRET
+              value: "{{ .Values.coturn.staticAuthSecret }}"
+          args:
+            - "--server-name=coturn"
+            - "--external-ip={{ .Values.coturn.externalIP }}"
+          ports:
+            - containerPort: 3478
+              name: turn
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tapin-coturn
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: tapin-coturn
+  ports:
+    - name: turn
+      port: 3478
+      targetPort: 3478
+{{- end }}
