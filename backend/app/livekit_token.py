@@ -1,12 +1,11 @@
-from livekit import AccessToken
-from livekit.grants import RoomGrant
-import time
-from typing import Optional
-
 """
 Create LiveKit access tokens using the official LiveKit server SDK.
 This replaces the minimal PyJWT-based helper with proper grant objects.
 """
+from livekit import AccessToken
+from livekit.grants import RoomGrant
+import time
+from typing import Optional
 
 def create_token(api_key: str, api_secret: str, identity: str, room: Optional[str] = None, ttl: int = 3600) -> str:
     """Return a JWT token string that can be used to join LiveKit.
@@ -16,12 +15,10 @@ def create_token(api_key: str, api_secret: str, identity: str, room: Optional[st
     - room: optional room name to scope the token
     - ttl: token time-to-live in seconds (default 1 hour)
     """
-    # AccessToken will handle nbf/exp internally when a ttl/valid_until is provided.
     token = AccessToken(api_key, api_secret, identity=identity)
 
     if room:
         grant = RoomGrant(room=room)
         token.add_grant(grant)
 
-    # The SDK exposes to_jwt() to get the encoded JWT string.
     return token.to_jwt()
